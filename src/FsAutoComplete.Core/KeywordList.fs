@@ -36,6 +36,7 @@ module KeywordList =
       "else", "Supports conditional compilation"
       "endif", "Supports conditional compilation"
       "nowarn", "Disables a compiler warning or warnings"
+      "warnon", "Enables a compiler warning that was disabled by #nowarn"
       "quit", "exits the interactive session"
       "time", "toggles whether to display performance information"
       "line", "Indicates the original source code line" ]
