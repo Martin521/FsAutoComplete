@@ -10,7 +10,7 @@ storage: none
 
 nuget BenchmarkDotNet
 nuget Fantomas.Client >= 0.9
-nuget FSharp.Compiler.Service >= 43.9.300
+#nuget FSharp.Compiler.Service >= 43.9.300
 nuget Ionide.Analyzers 0.14.6
 nuget FSharp.Analyzers.Build
 nuget Ionide.ProjInfo >= 0.71.2
