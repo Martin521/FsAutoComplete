@@ -69,7 +69,7 @@ type AdaptiveState =
   member GetProjectOptionsForFile: filePath: string<LocalPath> -> Async<Result<CompilerProjectOption, string>>
 
   member GetTypeCheckResultsForFile:
-    filePath: string<LocalPath> * opts: CompilerProjectOption -> Async<Result<ParseAndCheckResults, string>>
+    filePath: string<LocalPath> * opts: LoadedProject -> Async<Result<ParseAndCheckResults, string>>
 
   member GetTypeCheckResultsForFile: filePath: string<LocalPath> -> Async<Result<ParseAndCheckResults, string>>
   member GetFilesToProject: unit -> Async<(string<LocalPath> * LoadedProject) array>
@@ -119,6 +119,8 @@ type AdaptiveState =
   member GetDeclarations: filename: string<LocalPath> -> Async<Result<NavigationTopLevelDeclaration array, string>>
   member GetAllDeclarations: unit -> Async<(string<LocalPath> * NavigationTopLevelDeclaration array) array>
   member GlyphToSymbolKind: (FSharpGlyph -> SymbolKind option)
+  member DiscoverTests: unit -> Async<Result<TestServer.TestItem list, string>>
+  member RunTests: FilePath list option -> string option -> bool -> Async<Result<TestServer.TestResult list, string>>
   /// <summary>
   /// Signals the server to cancel an operation that is associated with the given progress token.
   /// </summary>

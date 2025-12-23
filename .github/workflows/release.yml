@@ -1,5 +1,9 @@
 name: Release
 
+permissions:
+  id-token: write
+  contents: write
+
 on:
   push:
     tags:
@@ -19,8 +23,9 @@ jobs:
         uses:  actions/setup-dotnet@v4
         with:
           dotnet-version: |
-           8.0.x
-           9.0.x
+           8.x
+           9.x
+           10.x
 
       - name: Restore tools
         run: dotnet tool restore
@@ -29,6 +34,7 @@ jobs:
         run: dotnet pack -c Release -o ./bin
         env:
           BuildNet9: true
+          BuildNet10: true
 
       - name: Get Changelog Entry
         id: changelog_reader

@@ -198,6 +198,22 @@ type TestDetectedNotification =
   { File: string
     Tests: TestAdapter.TestAdapterEntry<Range> array }
 
+type TestRunRequest =
+  { LimitToProjects: FilePath list option
+    TestCaseFilter: string option
+    AttachDebugger: bool }
+
+type TestLogMessage = { Level: string; Message: string }
+
+type TestDiscoveryUpdateNotification =
+  { Tests: TestServer.TestItem array
+    TestLogs: TestLogMessage array }
+
+type TestRunProgress =
+  { TestLogs: TestLogMessage array
+    TestResults: TestServer.TestResult array
+    ActiveTests: TestServer.TestItem array }
+
 type ProjectParms =
   {
     /// Project file to compile
@@ -316,6 +332,7 @@ type FSharpConfigDto =
     FSIExtraSharedParameters: string array option
     FSICompilerToolLocations: string array option
     TooltipMode: string option
+    TooltipShowDocumentationLink: bool option
     GenerateBinlog: bool option
     AbstractClassStubGeneration: bool option
     AbstractClassStubGenerationObjectIdentifier: string option
@@ -411,6 +428,7 @@ type FSharpConfig =
     FSIExtraSharedParameters: string array
     FSICompilerToolLocations: string array
     TooltipMode: string
+    TooltipShowDocumentationLink: bool
     GenerateBinlog: bool
     CodeLenses: CodeLensConfig
     InlayHints: InlayHintsConfig
@@ -464,7 +482,6 @@ val encodeSemanticHighlightRanges:
 type FSharpInlayHintsRequest =
   { TextDocument: TextDocumentIdentifier
     Range: Range }
-
 
 [<AutoOpen>]
 module Extensions =

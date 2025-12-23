@@ -553,30 +553,31 @@ module ClassificationUtils =
     (* custom modifiers *)
     | Mutable = 0b100_0000_0000
     | Disposable = 0b1000_0000_0000
+    | Extension = 0b1_0000_0000_0000
 
 
   let map (t: SemanticClassificationType) : SemanticTokenTypes * SemanticTokenModifier list =
     match t with
     | SemanticClassificationType.Operator -> SemanticTokenTypes.Operator, []
     | SemanticClassificationType.ReferenceType
+    | SemanticClassificationType.ConstructorForReferenceType -> SemanticTokenTypes.Class, []
     | SemanticClassificationType.Type
-    | SemanticClassificationType.TypeDef
-    | SemanticClassificationType.ConstructorForReferenceType -> SemanticTokenTypes.Type, []
+    | SemanticClassificationType.TypeDef -> SemanticTokenTypes.Type, []
     | SemanticClassificationType.ValueType
     | SemanticClassificationType.ConstructorForValueType -> SemanticTokenTypes.Struct, []
-    | SemanticClassificationType.UnionCase
-    | SemanticClassificationType.UnionCaseField -> SemanticTokenTypes.EnumMember, []
+    | SemanticClassificationType.UnionCase -> SemanticTokenTypes.EnumMember, []
+    | SemanticClassificationType.UnionCaseField -> SemanticTokenTypes.Parameter, []
     | SemanticClassificationType.Function
-    | SemanticClassificationType.Method
-    | SemanticClassificationType.ExtensionMethod -> SemanticTokenTypes.Function, []
+    | SemanticClassificationType.IntrinsicFunction -> SemanticTokenTypes.Function, []
+    | SemanticClassificationType.Method -> SemanticTokenTypes.Method, []
+    | SemanticClassificationType.ExtensionMethod -> SemanticTokenTypes.Method, [ SemanticTokenModifier.Extension ]
     | SemanticClassificationType.Property -> SemanticTokenTypes.Property, []
-    | SemanticClassificationType.MutableVar
-    | SemanticClassificationType.MutableRecordField -> SemanticTokenTypes.Member, [ SemanticTokenModifier.Mutable ]
+    | SemanticClassificationType.MutableVar -> SemanticTokenTypes.Variable, [ SemanticTokenModifier.Mutable ]
+    | SemanticClassificationType.MutableRecordField -> SemanticTokenTypes.Property, [ SemanticTokenModifier.Mutable ]
     | SemanticClassificationType.Module -> SemanticTokenTypes.Module, []
     | SemanticClassificationType.Namespace -> SemanticTokenTypes.Namespace, []
     | SemanticClassificationType.Printf -> SemanticTokenTypes.Regexp, []
     | SemanticClassificationType.ComputationExpression -> SemanticTokenTypes.Cexpr, []
-    | SemanticClassificationType.IntrinsicFunction -> SemanticTokenTypes.Function, []
     | SemanticClassificationType.Enumeration -> SemanticTokenTypes.Enum, []
     | SemanticClassificationType.Interface -> SemanticTokenTypes.Interface, []
     | SemanticClassificationType.TypeArgument -> SemanticTokenTypes.TypeParameter, []
@@ -612,6 +613,22 @@ type DocumentAnalyzedNotification =
 type TestDetectedNotification =
   { File: string
     Tests: TestAdapter.TestAdapterEntry<Range> array }
+
+type TestRunRequest =
+  { LimitToProjects: FilePath list option
+    TestCaseFilter: string option
+    AttachDebugger: bool }
+
+type TestLogMessage = { Level: string; Message: string }
+
+type TestDiscoveryUpdateNotification =
+  { Tests: TestServer.TestItem array
+    TestLogs: TestLogMessage array }
+
+type TestRunProgress =
+  { TestLogs: TestLogMessage array
+    TestResults: TestServer.TestResult array
+    ActiveTests: TestServer.TestItem array }
 
 type ProjectParms =
   {
@@ -733,6 +750,7 @@ type FSharpConfigDto =
     FSIExtraSharedParameters: string array option
     FSICompilerToolLocations: string array option
     TooltipMode: string option
+    TooltipShowDocumentationLink: bool option
     GenerateBinlog: bool option
     AbstractClassStubGeneration: bool option
     AbstractClassStubGenerationObjectIdentifier: string option
@@ -869,6 +887,7 @@ type FSharpConfig =
     FSIExtraSharedParameters: string array
     FSICompilerToolLocations: string array
     TooltipMode: string
+    TooltipShowDocumentationLink: bool
     GenerateBinlog: bool
     CodeLenses: CodeLensConfig
     InlayHints: InlayHintsConfig
@@ -920,6 +939,7 @@ type FSharpConfig =
       FSIExtraSharedParameters = [||]
       FSICompilerToolLocations = [||]
       TooltipMode = "full"
+      TooltipShowDocumentationLink = true
       GenerateBinlog = false
       CodeLenses = CodeLensConfig.Default
       InlayHints = InlayHintsConfig.Default
@@ -981,6 +1001,7 @@ type FSharpConfig =
       FSIExtraSharedParameters = defaultArg dto.FSIExtraSharedParameters FSharpConfig.Default.FSIExtraSharedParameters
       FSICompilerToolLocations = defaultArg dto.FSICompilerToolLocations FSharpConfig.Default.FSICompilerToolLocations
       TooltipMode = defaultArg dto.TooltipMode "full"
+      TooltipShowDocumentationLink = defaultArg dto.TooltipShowDocumentationLink true
       GenerateBinlog = defaultArg dto.GenerateBinlog false
       AbstractClassStubGeneration = defaultArg dto.AbstractClassStubGeneration false
       AbstractClassStubGenerationObjectIdentifier = defaultArg dto.AbstractClassStubGenerationObjectIdentifier "this"
@@ -1088,6 +1109,7 @@ type FSharpConfig =
       FSIExtraSharedParameters = defaultArg dto.FSIExtraSharedParameters FSharpConfig.Default.FSIExtraSharedParameters
       FSICompilerToolLocations = defaultArg dto.FSICompilerToolLocations FSharpConfig.Default.FSICompilerToolLocations
       TooltipMode = defaultArg dto.TooltipMode x.TooltipMode
+      TooltipShowDocumentationLink = defaultArg dto.TooltipShowDocumentationLink x.TooltipShowDocumentationLink
       GenerateBinlog = defaultArg dto.GenerateBinlog x.GenerateBinlog
       CodeLenses =
         match dto.CodeLenses with

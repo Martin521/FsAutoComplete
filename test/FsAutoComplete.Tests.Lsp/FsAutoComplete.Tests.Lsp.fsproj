@@ -3,6 +3,7 @@
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(BuildNet9)' == 'true'">net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(BuildNet10)' == 'true'">net8.0;net9.0;net10.0</TargetFrameworks>
     <GenerateProgramFile>false</GenerateProgramFile>
     <RollForward>LatestMajor</RollForward>
     <IsTestProject>true</IsTestProject>
@@ -12,6 +13,7 @@
          in .net 6 the TestCases projects don't know about these flags -->
     <!-- Yes we know 'times' is for test only, thanks FSC :) -->
     <NoWarn>$(NoWarn);FS0075</NoWarn>
+    <NoWarn>$(NoWarn);FS3397</NoWarn>
     <OtherFlags>$(OtherFlags) --test:GraphBasedChecking --test:DumpCheckingGraph</OtherFlags>
     <!-- end graph-based-checking options -->
   </PropertyGroup>
@@ -26,6 +28,7 @@
     <ProjectReference Include="..\FsAutoComplete.DependencyManager.Dummy\FsAutoComplete.DependencyManager.Dummy.fsproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DotnetCli.fs" />
     <Compile Include="Helpers.fsi" />
     <Compile Include="Helpers.fs" />
     <Compile Include="Utils/Utils.fsi" />

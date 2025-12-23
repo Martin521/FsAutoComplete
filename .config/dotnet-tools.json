@@ -3,7 +3,7 @@
   "isRoot": true,
   "tools": {
     "paket": {
-      "version": "9.0.2",
+      "version": "10.0.0-alpha011",
       "commands": [
         "paket"
       ],
@@ -17,14 +17,14 @@
       "rollForward": false
     },
     "fantomas": {
-      "version": "7.0.1",
+      "version": "7.0.3",
       "commands": [
         "fantomas"
       ],
       "rollForward": false
     },
     "fsharp-analyzers": {
-      "version": "0.32.1",
+      "version": "0.33.0",
       "commands": [
         "fsharp-analyzers"
       ],

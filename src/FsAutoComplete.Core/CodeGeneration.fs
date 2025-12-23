@@ -358,7 +358,10 @@ module CodeGenerationUtils =
         | _, true, _, name -> name + parArgs
         // Ordinary functions or values
         | false, _, _, name when
-          not (hasAttribute<RequireQualifiedAccessAttribute> v.ApparentEnclosingEntity.Attributes)
+          not (
+            v.ApparentEnclosingEntity
+            |> Option.exists (fun aee -> aee.Attributes |> hasAttribute<RequireQualifiedAccessAttribute>)
+          )
           ->
           name + " " + parArgs
         // Ordinary static members or things (?) that require fully qualified access
@@ -543,7 +546,7 @@ module CodeGenerationUtils =
     m.IsDispatchSlot
     // this member doesn't implement anything
     && (try
-          m.ImplementedAbstractSignatures <> null
+          (not (isNull m.ImplementedAbstractSignatures))
           && m.ImplementedAbstractSignatures.Count = 0
         with _ ->
           true) // exceptions here trying to access the member means we're safe
@@ -672,7 +675,7 @@ module CodeGenerationUtils =
     // This rule match when we are at the end of the namespace and there is no more tokens
     // interface System.Collections.ICollection
     //                              ^
-    | potentialDot :: validIdentifier :: [] when
+    | potentialDot :: [ validIdentifier ] when
       potentialDot.CharClass = FSharpTokenCharKind.Delimiter
       && potentialDot.TokenName = "DOT"
       && validIdentifier.CharClass = FSharpTokenCharKind.Identifier

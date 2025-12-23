@@ -20,7 +20,7 @@ module internal SynExprAppLocationsImpl =
       let res = loop exprs ranges
       Some(res), None
 
-    | SynExpr.Paren(SynExpr.Paren(_, _, _, _) as synExpr, _, _, _parenRange) ->
+    | SynExpr.Paren(SynExpr.Paren _ as synExpr, _, _, _parenRange) ->
       let r, _cacheOpt = searchSynArgExpr traverseSynExpr synExpr ranges
       r, None
 
@@ -155,13 +155,6 @@ module SyntaxTreeOps =
       | SynExpr.DotNamedIndexedPropertySet(e1, _, e2, e3, _) -> walkExpr e1 || walkExpr e2 || walkExpr e3
 
       | SynExpr.MatchBang(expr = e; clauses = cl) -> walkExpr e || walkMatchClauses cl
-
-      | SynExpr.LetOrUseBang(rhs = e1; body = e2; andBangs = es) ->
-        walkExpr e1
-        || walkExprs
-          [ for (SynExprAndBang(body = e)) in es do
-              yield e ]
-        || walkExpr e2
 
       | SynExpr.InterpolatedString(parts, _, _m) ->
         walkExprs (

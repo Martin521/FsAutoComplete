@@ -45,6 +45,7 @@ module Expecto =
       | (true, v) -> Some v
       | _ -> None)
     |> Option.defaultValue (60000)
+    |> float
     |> TimeSpan.FromMilliseconds
 
   /// Contains testCase functions that have a `DEFAULT_TIMEOUT` set to them
@@ -275,6 +276,7 @@ let defaultConfigDto: FSharpConfigDto =
     FSIExtraSharedParameters = None
     FSICompilerToolLocations = None
     TooltipMode = None
+    TooltipShowDocumentationLink = None
     GenerateBinlog = Some true
     AbstractClassStubGeneration = None
     AbstractClassStubGenerationMethodBody = None
